@@ -1,0 +1,274 @@
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="text/html;charset=UTF-8" http-equiv="Content-type"/>
+  <style>
+
+body {font-family: sans-serif;}
+table.dataTable {width: auto !important; margin: 0 !important;}
+.dataTables_filter, .dataTables_paginate {float: left !important; margin-left:1em}
+td {font-size: 10pt;}
+          </style>
+  <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js">
+  </script>
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js">
+  </script>
+
+            <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.flash.min.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+            <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.print.min.js"></script>
+             </head>
+ <body>
+  <script>
+var astropy_sort_num = function(a, b) {
+    var a_num = parseFloat(a);
+    var b_num = parseFloat(b);
+
+    if (isNaN(a_num) && isNaN(b_num))
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+    else if (!isNaN(a_num) && !isNaN(b_num))
+        return ((a_num < b_num) ? -1 : ((a_num > b_num) ? 1 : 0));
+    else
+        return isNaN(a_num) ? -1 : 1;
+}
+
+jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+    "optionalnum-asc": astropy_sort_num,
+    "optionalnum-desc": function (a,b) { return -astropy_sort_num(a, b); }
+});
+
+
+
+//// Parser
+// https://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js @ Reza Baradaran
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return null;
+    }
+    else{
+       return decodeURI(results[1]) || 0;
+    }
+}
+
+$.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+
+        var min_ra = parseFloat( $('#ra_min').val()) || -1e30;
+        var max_ra = parseFloat( $('#ra_max').val()) ||  1e30;
+        var data_ra = parseFloat( data[3] ) || 0;
+                
+        var min_dec = parseFloat( $('#dec_min').val()) || -1e30;
+        var max_dec = parseFloat( $('#dec_max').val()) ||  1e30;
+        var data_dec = parseFloat( data[4] ) || 0;
+                
+        var min_mag_auto = parseFloat( $('#mag_auto_min').val()) || -1e30;
+        var max_mag_auto = parseFloat( $('#mag_auto_max').val()) ||  1e30;
+        var data_mag_auto = parseFloat( data[5] ) || 0;
+                
+        var min_t_g800l = parseFloat( $('#t_g800l_min').val()) || -1e30;
+        var max_t_g800l = parseFloat( $('#t_g800l_max').val()) ||  1e30;
+        var data_t_g800l = parseFloat( data[6] ) || 0;
+                
+        var min_t_g102 = parseFloat( $('#t_g102_min').val()) || -1e30;
+        var max_t_g102 = parseFloat( $('#t_g102_max').val()) ||  1e30;
+        var data_t_g102 = parseFloat( data[7] ) || 0;
+                
+        var min_t_g141 = parseFloat( $('#t_g141_min').val()) || -1e30;
+        var max_t_g141 = parseFloat( $('#t_g141_max').val()) ||  1e30;
+        var data_t_g141 = parseFloat( data[8] ) || 0;
+                
+        var min_z_map = parseFloat( $('#z_map_min').val()) || -1e30;
+        var max_z_map = parseFloat( $('#z_map_max').val()) ||  1e30;
+        var data_z_map = parseFloat( data[9] ) || 0;
+                
+        var min_chinu = parseFloat( $('#chinu_min').val()) || -1e30;
+        var max_chinu = parseFloat( $('#chinu_max').val()) ||  1e30;
+        var data_chinu = parseFloat( data[10] ) || 0;
+                
+        var min_bic_diff = parseFloat( $('#bic_diff_min').val()) || -1e30;
+        var max_bic_diff = parseFloat( $('#bic_diff_max').val()) ||  1e30;
+        var data_bic_diff = parseFloat( data[11] ) || 0;
+                
+        var min_zwidth1 = parseFloat( $('#zwidth1_min').val()) || -1e30;
+        var max_zwidth1 = parseFloat( $('#zwidth1_max').val()) ||  1e30;
+        var data_zwidth1 = parseFloat( data[12] ) || 0;
+                
+        var min_d4000 = parseFloat( $('#d4000_min').val()) || -1e30;
+        var max_d4000 = parseFloat( $('#d4000_max').val()) ||  1e30;
+        var data_d4000 = parseFloat( data[13] ) || 0;
+                
+        var min_d4000_e = parseFloat( $('#d4000_e_min').val()) || -1e30;
+        var max_d4000_e = parseFloat( $('#d4000_e_max').val()) ||  1e30;
+        var data_d4000_e = parseFloat( data[14] ) || 0;
+                
+
+        if ( ( ( isNaN( min_ra ) && isNaN( max_ra ) ) || ( isNaN( min_ra ) && data_ra <= max_ra ) || ( min_ra <= data_ra  && isNaN( max_ra ) ) || ( min_ra <= data_ra  && data_ra <= max_ra ) )
+ && ( ( isNaN( min_dec ) && isNaN( max_dec ) ) || ( isNaN( min_dec ) && data_dec <= max_dec ) || ( min_dec <= data_dec  && isNaN( max_dec ) ) || ( min_dec <= data_dec  && data_dec <= max_dec ) )
+ && ( ( isNaN( min_mag_auto ) && isNaN( max_mag_auto ) ) || ( isNaN( min_mag_auto ) && data_mag_auto <= max_mag_auto ) || ( min_mag_auto <= data_mag_auto  && isNaN( max_mag_auto ) ) || ( min_mag_auto <= data_mag_auto  && data_mag_auto <= max_mag_auto ) )
+ && ( ( isNaN( min_t_g800l ) && isNaN( max_t_g800l ) ) || ( isNaN( min_t_g800l ) && data_t_g800l <= max_t_g800l ) || ( min_t_g800l <= data_t_g800l  && isNaN( max_t_g800l ) ) || ( min_t_g800l <= data_t_g800l  && data_t_g800l <= max_t_g800l ) )
+ && ( ( isNaN( min_t_g102 ) && isNaN( max_t_g102 ) ) || ( isNaN( min_t_g102 ) && data_t_g102 <= max_t_g102 ) || ( min_t_g102 <= data_t_g102  && isNaN( max_t_g102 ) ) || ( min_t_g102 <= data_t_g102  && data_t_g102 <= max_t_g102 ) )
+ && ( ( isNaN( min_t_g141 ) && isNaN( max_t_g141 ) ) || ( isNaN( min_t_g141 ) && data_t_g141 <= max_t_g141 ) || ( min_t_g141 <= data_t_g141  && isNaN( max_t_g141 ) ) || ( min_t_g141 <= data_t_g141  && data_t_g141 <= max_t_g141 ) )
+ && ( ( isNaN( min_z_map ) && isNaN( max_z_map ) ) || ( isNaN( min_z_map ) && data_z_map <= max_z_map ) || ( min_z_map <= data_z_map  && isNaN( max_z_map ) ) || ( min_z_map <= data_z_map  && data_z_map <= max_z_map ) )
+ && ( ( isNaN( min_chinu ) && isNaN( max_chinu ) ) || ( isNaN( min_chinu ) && data_chinu <= max_chinu ) || ( min_chinu <= data_chinu  && isNaN( max_chinu ) ) || ( min_chinu <= data_chinu  && data_chinu <= max_chinu ) )
+ && ( ( isNaN( min_bic_diff ) && isNaN( max_bic_diff ) ) || ( isNaN( min_bic_diff ) && data_bic_diff <= max_bic_diff ) || ( min_bic_diff <= data_bic_diff  && isNaN( max_bic_diff ) ) || ( min_bic_diff <= data_bic_diff  && data_bic_diff <= max_bic_diff ) )
+ && ( ( isNaN( min_zwidth1 ) && isNaN( max_zwidth1 ) ) || ( isNaN( min_zwidth1 ) && data_zwidth1 <= max_zwidth1 ) || ( min_zwidth1 <= data_zwidth1  && isNaN( max_zwidth1 ) ) || ( min_zwidth1 <= data_zwidth1  && data_zwidth1 <= max_zwidth1 ) )
+ && ( ( isNaN( min_d4000 ) && isNaN( max_d4000 ) ) || ( isNaN( min_d4000 ) && data_d4000 <= max_d4000 ) || ( min_d4000 <= data_d4000  && isNaN( max_d4000 ) ) || ( min_d4000 <= data_d4000  && data_d4000 <= max_d4000 ) )
+ && ( ( isNaN( min_d4000_e ) && isNaN( max_d4000_e ) ) || ( isNaN( min_d4000_e ) && data_d4000_e <= max_d4000_e ) || ( min_d4000_e <= data_d4000_e  && isNaN( max_d4000_e ) ) || ( min_d4000_e <= data_d4000_e  && data_d4000_e <= max_d4000_e ) ) )
+        {
+            return true;
+        }
+        return false;
+    }
+);
+
+//// Update URL with filter parameters
+var filter_params = ['ra', 'dec', 'mag_auto', 't_g800l', 't_g102', 't_g141', 'z_map', 'chinu', 'bic_diff', 'zwidth1', 'd4000', 'd4000_e'];
+
+$.UpdateFilterURL = function () {
+    var i;
+    var filter_url = "";
+    for (i = 0; i < filter_params.length; i++) {
+        if ($('#'+filter_params[i]+'_min').val() != "") {
+            filter_url += '&'+filter_params[i]+'_min='+
+                    $('#'+filter_params[i]+'_min').val();
+        }
+        if ($('#'+filter_params[i]+'_max').val() != "") {
+            filter_url += '&'+filter_params[i]+'_max='+
+                    $('#'+filter_params[i]+'_max').val();
+        }
+    }
+
+    if (filter_url != "") {
+        var filtered_url = window.location.href.split('?')[0] + '?' + filter_url;
+        window.history.pushState('', '', filtered_url);
+    }
+}
+
+$(document).ready(function() {
+
+   $('#d4000_e_min').val($.urlParam('d4000_e_min'));
+   $('#d4000_e_max').val($.urlParam('d4000_e_max'));
+   $('#d4000_min').val($.urlParam('d4000_min'));
+   $('#d4000_max').val($.urlParam('d4000_max'));
+   $('#zwidth1_min').val($.urlParam('zwidth1_min'));
+   $('#zwidth1_max').val($.urlParam('zwidth1_max'));
+   $('#bic_diff_min').val($.urlParam('bic_diff_min'));
+   $('#bic_diff_max').val($.urlParam('bic_diff_max'));
+   $('#chinu_min').val($.urlParam('chinu_min'));
+   $('#chinu_max').val($.urlParam('chinu_max'));
+   $('#z_map_min').val($.urlParam('z_map_min'));
+   $('#z_map_max').val($.urlParam('z_map_max'));
+   $('#t_g141_min').val($.urlParam('t_g141_min'));
+   $('#t_g141_max').val($.urlParam('t_g141_max'));
+   $('#t_g102_min').val($.urlParam('t_g102_min'));
+   $('#t_g102_max').val($.urlParam('t_g102_max'));
+   $('#t_g800l_min').val($.urlParam('t_g800l_min'));
+   $('#t_g800l_max').val($.urlParam('t_g800l_max'));
+   $('#mag_auto_min').val($.urlParam('mag_auto_min'));
+   $('#mag_auto_max').val($.urlParam('mag_auto_max'));
+   $('#dec_min').val($.urlParam('dec_min'));
+   $('#dec_max').val($.urlParam('dec_max'));
+   $('#ra_min').val($.urlParam('ra_min'));
+   $('#ra_max').val($.urlParam('ra_max'));
+
+   var table = $('#table6973272848').DataTable({
+        order: [],
+        pageLength: 50,
+        "ajax": "j141156p3415-fit.json",
+        "deferRender": true,
+        dom: 'Blfrtip',
+        buttons: ['csv'],
+        lengthMenu: [[10, 25, 50, 100, 500, 1000, -1], [10, 25, 50, 100, 500, 1000, 'All']],
+        pagingType: "full_numbers",
+        columnDefs: [{targets: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], type: "optionalnum"}]
+    });
+
+    // Event listener to the two range filtering inputs to redraw on input
+    $('#ra_min, #ra_max, #dec_min, #dec_max, #mag_auto_min, #mag_auto_max, #t_g800l_min, #t_g800l_max, #t_g102_min, #t_g102_max, #t_g141_min, #t_g141_max, #z_map_min, #z_map_max, #chinu_min, #chinu_max, #bic_diff_min, #bic_diff_max, #zwidth1_min, #zwidth1_max, #d4000_min, #d4000_max, #d4000_e_min, #d4000_e_max').keyup( function() {
+        table.draw();
+        $.UpdateFilterURL();
+    } );
+
+    $('a.toggle-vis').on( 'click', function (e) {
+        e.preventDefault();
+
+        // Get the column API object
+        var column = table.column( $(this).attr('data-column') );
+
+        // Toggle the visibility
+        column.visible( ! column.visible() );
+    } );
+
+                        } );  </script>
+
+<div style="border:1px solid black; padding:10px; margin:10px">
+    <b>Toggle column:</b></br> <a class="toggle-vis" data-column="0"> <tt>root</tt> </a> <b>/</b> <a class="toggle-vis" data-column="1"> <tt>mtime</tt> </a> <b>/</b> <a class="toggle-vis" data-column="2"> <tt>idx</tt> </a> <b>/</b> <a class="toggle-vis" data-column="3"> <tt>ra</tt> </a> <b>/</b> <a class="toggle-vis" data-column="4"> <tt>dec</tt> </a> <b>/</b> <a class="toggle-vis" data-column="5"> <tt>mag_auto</tt> </a> <b>/</b> <a class="toggle-vis" data-column="6"> <tt>t_g800l</tt> </a> <b>/</b> <a class="toggle-vis" data-column="7"> <tt>t_g102</tt> </a> <b>/</b> <a class="toggle-vis" data-column="8"> <tt>t_g141</tt> </a> <b>/</b> <a class="toggle-vis" data-column="9"> <tt>z_map</tt> </a> <b>/</b> <a class="toggle-vis" data-column="10"> <tt>chinu</tt> </a> <b>/</b> <a class="toggle-vis" data-column="11"> <tt>bic_diff</tt> </a> <b>/</b> <a class="toggle-vis" data-column="12"> <tt>zwidth1</tt> </a> <b>/</b> <a class="toggle-vis" data-column="13"> <tt>d4000</tt> </a> <b>/</b> <a class="toggle-vis" data-column="14"> <tt>d4000_e</tt> </a> <b>/</b> <a class="toggle-vis" data-column="15"> <tt>png_stack</tt> </a> <b>/</b> <a class="toggle-vis" data-column="16"> <tt>png_full</tt> </a> <b>/</b> <a class="toggle-vis" data-column="17"> <tt>png_rgb</tt> </a> <b>/</b> <a class="toggle-vis" data-column="18"> <tt>png_line</tt> </a>
+</div>
+
+            
+
+<div style="border:1px solid black; padding:10px; margin:10px">
+<b> Filter: </b>
+    <table>
+      <tr> <td> <input type="text" id="ra_min" name="ra_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>ra</tt> </td> <td>  &#60; <input type="text" id="ra_max" name="ra_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="dec_min" name="dec_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>dec</tt> </td> <td>  &#60; <input type="text" id="dec_max" name="dec_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="mag_auto_min" name="mag_auto_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>mag_auto</tt> </td> <td>  &#60; <input type="text" id="mag_auto_max" name="mag_auto_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="t_g800l_min" name="t_g800l_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>t_g800l</tt> </td> <td>  &#60; <input type="text" id="t_g800l_max" name="t_g800l_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="t_g102_min" name="t_g102_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>t_g102</tt> </td> <td>  &#60; <input type="text" id="t_g102_max" name="t_g102_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="t_g141_min" name="t_g141_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>t_g141</tt> </td> <td>  &#60; <input type="text" id="t_g141_max" name="t_g141_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="z_map_min" name="z_map_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>z_map</tt> </td> <td>  &#60; <input type="text" id="z_map_max" name="z_map_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="chinu_min" name="chinu_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>chinu</tt> </td> <td>  &#60; <input type="text" id="chinu_max" name="chinu_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="bic_diff_min" name="bic_diff_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>bic_diff</tt> </td> <td>  &#60; <input type="text" id="bic_diff_max" name="bic_diff_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="zwidth1_min" name="zwidth1_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>zwidth1</tt> </td> <td>  &#60; <input type="text" id="zwidth1_max" name="zwidth1_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="d4000_min" name="d4000_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>d4000</tt> </td> <td>  &#60; <input type="text" id="d4000_max" name="d4000_max" style="width:40px;">
+
+<tr> <td> <input type="text" id="d4000_e_min" name="d4000_e_min" style="width:40px;"> &#60; </td> <td style="align:center;"> <tt>d4000_e</tt> </td> <td>  &#60; <input type="text" id="d4000_e_max" name="d4000_e_max" style="width:40px;">
+
+    </table>
+</div>
+
+  <table class="display compact" id="table6973272848">
+   <thead>
+    <tr>
+     <th>root</th>
+     <th>mtime</th>
+     <th>idx</th>
+     <th>ra</th>
+     <th>dec</th>
+     <th>mag_auto</th>
+     <th>t_g800l</th>
+     <th>t_g102</th>
+     <th>t_g141</th>
+     <th>z_map</th>
+     <th>chinu</th>
+     <th>bic_diff</th>
+     <th>zwidth1</th>
+     <th>d4000</th>
+     <th>d4000_e</th>
+     <th>png_stack</th>
+     <th>png_full</th>
+     <th>png_rgb</th>
+     <th>png_line</th>
+    </tr>
+   </thead>
+  </table>
+ </body>
+</html>
+
